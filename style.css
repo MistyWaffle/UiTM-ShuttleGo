@@ -1,0 +1,459 @@
+/* --- CSS VARIABLES & THEME --- */
+:root {
+    /* Light Mode Defaults */
+    --uitm-purple: #60269E;
+    --uitm-green: #006837;
+    --uitm-gold: #FFD100;
+    --bg-neutral: #F2F4F6;
+    --surface: #ffffff;
+    --text-dark: #1a1a1a;
+    --text-sub: #666666;
+    --nav-bg: rgba(255, 255, 255, 0.95);
+    --map-bg: #f4f9f6;
+    --map-campus: #ffffff;
+    --map-stroke: #e0e0e0;
+
+    --radius-lg: 24px;
+    --radius-md: 16px;
+    --radius-sm: 12px;
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.05);
+    --shadow-float: 0 8px 24px rgba(0, 0, 0, 0.12);
+    --font-main: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    --safe-area-bottom: env(safe-area-inset-bottom, 20px);
+}
+
+/* Dark Mode Overrides */
+[data-theme="dark"] {
+    --bg-neutral: #121212;
+    --surface: #1e1e1e;
+    --text-dark: #e0e0e0;
+    --text-sub: #a0a0a0;
+    --nav-bg: rgba(30, 30, 30, 0.95);
+    --map-bg: #1a1a1a;
+    --map-campus: #2a2a2a;
+    --map-stroke: #444;
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+    --shadow-float: 0 8px 24px rgba(0, 0, 0, 0.5);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    -webkit-tap-highlight-color: transparent;
+}
+
+body {
+    font-family: var(--font-main);
+    background-color: var(--bg-neutral);
+    color: var(--text-dark);
+    line-height: 1.5;
+    height: 100vh;
+    overflow: hidden;
+    /* App-like feel */
+    display: flex;
+    flex-direction: column;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+/* --- HEADER --- */
+header {
+    background: var(--surface);
+    padding: 1rem 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: var(--shadow-sm);
+    z-index: 50;
+    transition: background 0.3s;
+}
+
+.logo {
+    font-weight: 800;
+    font-size: 1.2rem;
+    color: var(--uitm-green);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.logo span {
+    color: var(--uitm-purple);
+}
+
+.wallet-pill {
+    background: var(--bg-neutral);
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--uitm-green);
+    transition: background 0.3s;
+}
+
+/* --- MAIN SCROLLABLE AREA --- */
+main {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1rem;
+    padding-bottom: 100px;
+    /* Space for island nav */
+    position: relative;
+}
+
+/* --- VIEWS (TABS) --- */
+.view-section {
+    display: none;
+    animation: fadeIn 0.3s ease;
+}
+
+.view-section.active {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(5px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+}
+
+/* --- CARDS --- */
+.card {
+    background: var(--surface);
+    border-radius: var(--radius-md);
+    padding: 1.25rem;
+    box-shadow: var(--shadow-sm);
+    position: relative;
+    overflow: hidden;
+    transition: background 0.3s;
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.card-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text-dark);
+}
+
+/* --- MAP --- */
+.map-wrapper {
+    height: 300px;
+    /* Mobile height */
+    background: var(--map-bg);
+    border-radius: var(--radius-md);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+    position: relative;
+    transition: background 0.3s;
+}
+
+@media(min-width: 768px) {
+    .map-wrapper {
+        height: 400px;
+    }
+}
+
+/* SVG Theme classes */
+.svg-campus {
+    fill: var(--map-campus);
+    stroke: var(--map-stroke);
+    transition: fill 0.3s;
+}
+
+.svg-bg {
+    fill: var(--map-bg);
+    transition: fill 0.3s;
+}
+
+/* --- ETA CARDS --- */
+.eta-scroller {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    padding-bottom: 5px;
+    /* Hide scrollbar */
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.eta-scroller::-webkit-scrollbar {
+    display: none;
+}
+
+.eta-card {
+    min-width: 140px;
+    background: var(--bg-neutral);
+    padding: 1rem;
+    border-radius: var(--radius-sm);
+    border-left: 4px solid var(--uitm-green);
+    flex-shrink: 0;
+    transition: background 0.3s;
+}
+
+/* --- WALLET & QR --- */
+.wallet-card {
+    background: linear-gradient(135deg, var(--uitm-green), #004d29);
+    color: white;
+    text-align: center;
+}
+
+.balance-display {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin: 1rem 0;
+}
+
+.qr-container {
+    background: white;
+    padding: 1rem;
+    border-radius: var(--radius-sm);
+    display: inline-block;
+    margin: 1rem auto;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.action-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+/* --- BOTTOM NAVIGATION ISLAND --- */
+.nav-island-container {
+    position: fixed;
+    bottom: 20px;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: center;
+    z-index: 100;
+    pointer-events: none;
+    /* Let clicks pass through side areas */
+}
+
+.nav-island {
+    background: var(--nav-bg);
+    backdrop-filter: blur(10px);
+    padding: 10px 20px;
+    border-radius: 30px;
+    box-shadow: var(--shadow-float);
+    display: flex;
+    gap: 8px;
+    pointer-events: auto;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    transition: background 0.3s;
+}
+
+.nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 16px;
+    border-radius: 20px;
+    color: var(--text-sub);
+    font-size: 0.7rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    min-width: 65px;
+}
+
+.nav-item svg {
+    width: 24px;
+    height: 24px;
+    margin-bottom: 4px;
+    fill: currentColor;
+}
+
+.nav-item.active {
+    background: var(--uitm-purple);
+    color: white;
+}
+
+/* --- BUTTONS --- */
+.btn {
+    width: 100%;
+    padding: 14px;
+    border-radius: var(--radius-sm);
+    border: none;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.btn:active {
+    opacity: 0.8;
+}
+
+.btn-primary {
+    background: var(--uitm-gold);
+    color: #4a3b00;
+}
+
+.btn-outline {
+    background: transparent;
+    border: 2px solid var(--uitm-gold);
+    color: var(--text-dark);
+}
+
+.btn-danger {
+    background: #ffecec;
+    color: #d60000;
+}
+
+.btn-action {
+    background: var(--surface);
+    color: var(--uitm-green);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1rem;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+}
+
+/* --- MODALS --- */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 200;
+    display: none;
+    align-items: flex-end;
+    /* Bottom sheet on mobile */
+    justify-content: center;
+}
+
+.modal-overlay.open {
+    display: flex;
+}
+
+@media(min-width: 768px) {
+    .modal-overlay {
+        align-items: center;
+    }
+
+    .modal {
+        width: 400px;
+        border-radius: var(--radius-lg) !important;
+    }
+}
+
+.modal {
+    background: var(--surface);
+    width: 100%;
+    padding: 1.5rem;
+    border-top-left-radius: var(--radius-lg);
+    border-top-right-radius: var(--radius-lg);
+    animation: slideUp 0.3s ease;
+    color: var(--text-dark);
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(100%);
+    }
+
+    to {
+        transform: translateY(0);
+    }
+}
+
+/* --- UTILITIES --- */
+.badge {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: bold;
+}
+
+.badge-admin {
+    background: #ffecec;
+    color: #d60000;
+}
+
+.badge-student {
+    background: #e6f0e9;
+    color: var(--uitm-green);
+}
+
+.hidden {
+    display: none;
+}
+
+/* Text colors for schedule */
+table th,
+table td {
+    color: var(--text-dark);
+}
+
+table thead {
+    background: var(--bg-neutral) !important;
+}
+
+/* --- SVG MAP STYLES --- */
+.stop-dot {
+    fill: white;
+    stroke: var(--uitm-green);
+    stroke-width: 3;
+    r: 6;
+    transition: r 0.2s;
+}
+
+.stop-dot:hover {
+    r: 9;
+}
+
+.stop-text {
+    font-size: 10px;
+    fill: var(--text-sub);
+    font-weight: bold;
+}
+
+.bus-marker {
+    filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.3));
+    transition: transform 0.1s linear;
+}
+
+.route-line {
+    fill: none;
+    stroke: var(--map-stroke);
+    stroke-width: 6;
+    stroke-linecap: round;
+    transition: stroke 0.3s;
+}
+
+.route-active {
+    fill: none;
+    stroke: var(--uitm-green);
+    stroke-width: 3;
+    stroke-dasharray: 8, 4;
+}
