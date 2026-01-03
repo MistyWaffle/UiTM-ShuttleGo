@@ -161,7 +161,7 @@ const app = {
         const container = document.getElementById('etaContainer');
         let html = '';
 
-        CONFIG.stops.forEach(stop => {
+        CONFIG.stops.forEach((stop, index) => {
             let dist = stop.p - this.busPos;
             if (dist < 0) dist += CONFIG.routeLength;
 
@@ -172,11 +172,17 @@ const app = {
             if (mins <= 0) mins = "Arriving";
             else mins += " min";
 
+            const isLast = index === CONFIG.stops.length - 1;
+            const borderStyle = isLast ? '' : 'border-bottom:1px solid #eee;';
+
             html += `
-                <div class="eta-card">
-                    <div style="font-size:1.5rem; font-weight:bold; color:var(--text-dark);">${mins}</div>
-                    <div style="font-size:0.8rem; color:var(--text-sub);">${stop.name}</div>
-                </div>
+                <li style="display:flex; justify-content:space-between; align-items:center; padding:12px 0; ${borderStyle}">
+                    <div style="display:flex; align-items:center; gap:10px;">
+                        <div style="width:10px; height:10px; background:var(--uitm-green); border-radius:50%;"></div>
+                        <span style="color:var(--text-dark); font-weight:500;">${stop.name}</span>
+                    </div>
+                    <div style="font-weight:bold; color:var(--uitm-purple); font-size:1.1rem;">${mins}</div>
+                </li>
             `;
         });
         container.innerHTML = html;
@@ -235,6 +241,86 @@ const app = {
             </div>`;
         });
         container.innerHTML = html;
+    },
+
+    // --- CHAT LOGIC ---
+    sendChat: function() {
+        const input = document.getElementById('chatInput');
+        const text = input.value.trim();
+        if (!text) return;
+
+        // User Message
+        this.addChatBubble(text, false);
+        input.value = "";
+
+        // Auto Response
+        this.showTyping();
+        setTimeout(() => {
+            this.removeTyping();
+            const response = this.generateResponse(text);
+            this.addChatBubble(response, true);
+        }, 1000 + Math.random() * 1000);
+    },
+
+    addChatBubble: function(text, isBot) {
+        const container = document.getElementById('chatMessages');
+        const div = document.createElement('div');
+        div.className = `chat-bubble ${isBot ? 'bot' : ''}`;
+        div.innerText = text;
+        container.appendChild(div);
+        container.scrollTop = container.scrollHeight;
+    },
+
+    showTyping: function() {
+        const container = document.getElementById('chatMessages');
+        const div = document.createElement('div');
+        div.id = 'typingIndicator';
+        div.className = 'chat-bubble bot';
+        div.style.fontStyle = 'italic';
+        div.style.opacity = '0.7';
+        div.innerText = "Uncle Bus is typing...";
+        container.appendChild(div);
+        container.scrollTop = container.scrollHeight;
+    },
+
+    removeTyping: function() {
+        const el = document.getElementById('typingIndicator');
+        if (el) el.remove();
+    },
+
+    generateResponse: function(msg) {
+        msg = msg.toLowerCase();
+
+        if (msg.includes('hello') || msg.includes('hi') || msg.includes('hey')) {
+            return "Hello! Hop on, the aircond is cold today! ❄️";
+        }
+        if (msg.includes('where') || msg.includes('location') || msg.includes('arrive')) {
+            // Find nearest stop
+            const nearest = CONFIG.stops.reduce((prev, curr) => {
+                return (Math.abs(curr.p - this.busPos) < Math.abs(prev.p - this.busPos) ? curr : prev);
+            });
+            return `I'm currently near ${nearest.name}. Driving safely! 🚌`;
+        }
+        if (msg.includes('schedule') || msg.includes('time') || msg.includes('when')) {
+            return "I loop every 20-30 minutes. Check the 'Schedule' tab for exact times!";
+        }
+        if (msg.includes('traffic') || msg.includes('jam')) {
+            return this.isTraffic ? "Aiyoo, very jam today! 🚦" : "Smooth roads ahead! No jam.";
+        }
+        if (msg.includes('balance') || msg.includes('money') || msg.includes('pay')) {
+            return `Your balance is RM ${this.balance.toFixed(2)}. Don't forget to scan!`;
+        }
+        if (msg.includes('bye')) {
+            return "Bye bye! Study hard!";
+        }
+
+        const defaults = [
+            "I'm just driving, ask me about the schedule.",
+            "Please stand behind the yellow line.",
+            "Don't forget your student ID card!",
+            "Did you scan your QR code?"
+        ];
+        return defaults[Math.floor(Math.random() * defaults.length)];
     },
 
     loadData: function () {

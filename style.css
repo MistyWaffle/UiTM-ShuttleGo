@@ -54,6 +54,23 @@ body {
     display: flex;
     flex-direction: column;
     transition: background-color 0.3s, color 0.3s;
+    font-size: 16px; /* Optimized for readability */
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #bbb;
 }
 
 /* --- HEADER --- */
@@ -69,16 +86,12 @@ header {
 }
 
 .logo {
-    font-weight: 800;
-    font-size: 1.2rem;
-    color: var(--uitm-green);
     display: flex;
     align-items: center;
-    gap: 8px;
 }
 
-.logo span {
-    color: var(--uitm-purple);
+.logo img {
+    display: block;
 }
 
 .wallet-pill {
@@ -127,11 +140,35 @@ main {
 }
 
 .container {
-    max-width: 800px;
+    max-width: 900px;
     margin: 0 auto;
     display: flex;
     flex-direction: column;
     gap: 1.2rem;
+    height: 100%;
+}
+
+/* Desktop Grid Layout */
+@media(min-width: 900px) {
+    .container {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        align-items: start;
+        grid-gap: 1.5rem;
+    }
+    /* Make map span full height of its column if needed */
+    #view-tracker .container {
+        grid-template-areas: 
+            "map info"
+            "map actions";
+    }
+    #view-tracker .card:first-child { grid-area: map; height: 100%; }
+    
+    /* Adjust full-width views */
+    #view-schedule .container, #view-chat .container {
+        display: flex; /* Keep these as flex column */
+        max-width: 800px;
+    }
 }
 
 /* --- CARDS --- */
@@ -160,8 +197,9 @@ main {
 
 /* --- MAP --- */
 .map-wrapper {
-    height: 300px;
-    /* Mobile height */
+    height: 35vh;
+    min-height: 300px;
+    max-height: 600px;
     background: var(--map-bg);
     border-radius: var(--radius-md);
     border: 1px solid rgba(0, 0, 0, 0.05);
@@ -170,9 +208,10 @@ main {
     transition: background 0.3s;
 }
 
-@media(min-width: 768px) {
+@media(min-width: 900px) {
     .map-wrapper {
-        height: 400px;
+        height: 100%; /* Fill container in grid */
+        min-height: 500px;
     }
 }
 
@@ -189,29 +228,7 @@ main {
 }
 
 /* --- ETA CARDS --- */
-.eta-scroller {
-    display: flex;
-    gap: 10px;
-    overflow-x: auto;
-    padding-bottom: 5px;
-    /* Hide scrollbar */
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-}
-
-.eta-scroller::-webkit-scrollbar {
-    display: none;
-}
-
-.eta-card {
-    min-width: 140px;
-    background: var(--bg-neutral);
-    padding: 1rem;
-    border-radius: var(--radius-sm);
-    border-left: 4px solid var(--uitm-green);
-    flex-shrink: 0;
-    transition: background 0.3s;
-}
+/* (Replaced by single card list in v2.2) */
 
 /* --- WALLET & QR --- */
 .wallet-card {
@@ -282,6 +299,10 @@ main {
     min-width: 65px;
 }
 
+.nav-item:hover {
+    background: rgba(0,0,0,0.03);
+}
+
 .nav-item svg {
     width: 24px;
     height: 24px;
@@ -292,6 +313,8 @@ main {
 .nav-item.active {
     background: var(--uitm-purple);
     color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(96, 38, 158, 0.3);
 }
 
 /* --- BUTTONS --- */
@@ -303,11 +326,12 @@ main {
     font-weight: 600;
     font-size: 1rem;
     cursor: pointer;
-    transition: opacity 0.2s;
+    transition: all 0.2s;
 }
 
 .btn:active {
     opacity: 0.8;
+    transform: scale(0.98);
 }
 
 .btn-primary {
@@ -456,4 +480,34 @@ table thead {
     stroke: var(--uitm-green);
     stroke-width: 3;
     stroke-dasharray: 8, 4;
+}
+
+/* --- CHAT --- */
+.chat-bubble {
+    max-width: 80%;
+    padding: 10px 15px;
+    border-radius: 18px;
+    font-size: 0.95rem;
+    line-height: 1.4;
+    position: relative;
+    word-wrap: break-word;
+    align-self: flex-end; /* User messages right */
+    background: var(--uitm-purple);
+    color: white;
+    border-bottom-right-radius: 4px;
+    animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.chat-bubble.bot {
+    align-self: flex-start; /* Bot messages left */
+    background: var(--surface);
+    color: var(--text-dark);
+    border: 1px solid var(--map-stroke);
+    border-bottom-right-radius: 18px;
+    border-bottom-left-radius: 4px;
+}
+
+@keyframes popIn {
+    from { opacity: 0; transform: scale(0.8); }
+    to { opacity: 1; transform: scale(1); }
 }
