@@ -23,6 +23,20 @@ const app = {
         this.renderAnnouncements();
         this.startSimulation();
         this.loadTheme();
+        this.handleLoadingScreen();
+    },
+
+    // --- LOADING SCREEN ---
+    handleLoadingScreen: function() {
+        setTimeout(() => {
+            const loader = document.getElementById('loading-screen');
+            if (loader) {
+                loader.classList.add('fade-out');
+                setTimeout(() => {
+                    loader.remove(); // Remove from DOM to cleanup
+                }, 500); // Wait for transition to finish
+            }
+        }, 2000); // Show logo for 2 seconds
     },
 
     // --- THEMING ---
