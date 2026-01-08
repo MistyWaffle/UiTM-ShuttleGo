@@ -91,6 +91,10 @@ const app = {
     },
 
     processTopUp: function (amount) {
+        // Get source
+        const sourceSelect = document.getElementById('topUpSource');
+        const sourceName = sourceSelect ? sourceSelect.value : 'Online Banking';
+
         // Simulate banking delay
         const btn = event.target;
         const originalText = btn.innerText;
@@ -98,12 +102,51 @@ const app = {
 
         setTimeout(() => {
             this.balance += amount;
-            this.addTransaction(`Top Up via Online Banking`, `+ RM ${amount.toFixed(2)}`);
+            this.addTransaction(`Top Up via ${sourceName}`, `+ RM ${amount.toFixed(2)}`);
             this.renderBalance();
             this.closeModal();
             btn.innerText = originalText;
-            alert(`Top up of RM ${amount} successful!`);
+            alert(`Top up of RM ${amount} successful via ${sourceName}!`);
         }, 800);
+    },
+
+    processCustomTopUp: function() {
+        const input = prompt("Enter amount to Top Up (RM):", "10");
+        if (input) {
+            const amount = parseFloat(input);
+            if (!isNaN(amount) && amount > 0) {
+                this.processTopUp(amount);
+            } else {
+                alert("Invalid amount entered.");
+            }
+        }
+    },
+
+    handleStopClick: function(stopName) {
+        alert(`🚏 Stop Info:\n${stopName}\n\nStatus: Active\nFacilities: Covered waiting area.`);
+    },
+
+    refreshQR: function() {
+        const qr = document.querySelector('.qr-container svg');
+        if(qr) {
+            qr.style.opacity = '0.5';
+            setTimeout(() => {
+                qr.style.opacity = '1';
+                alert("QR Code Refreshed!");
+            }, 500);
+        }
+    },
+
+    editProfile: function() {
+        const name = prompt("Edit Display Name:", "Student Name");
+        if(name) {
+            document.querySelector('#view-profile .card-title').innerText = name;
+            alert("Profile Updated!");
+        }
+    },
+
+    toggleReminder: function(stopName) {
+        alert(`⏰ Reminder set for ${stopName}.\nWe will notify you 5 minutes before arrival.`);
     },
 
     simulateScan: function () {

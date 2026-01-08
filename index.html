@@ -55,17 +55,17 @@
                             <path d="M 80 80 L 320 80 L 320 220 L 80 220 Z" class="route-active" />
 
                             <!-- Stops -->
-                            <circle cx="80" cy="80" class="stop-dot" />
-                            <text x="60" y="65" class="stop-text">Seri Mulu</text>
+                            <circle cx="80" cy="80" class="stop-dot" onclick="app.handleStopClick('Kolej Seri Mulu')" style="cursor:pointer; pointer-events:all;" />
+                            <text x="60" y="65" class="stop-text" onclick="app.handleStopClick('Kolej Seri Mulu')" style="cursor:pointer; pointer-events:all;">Seri Mulu</text>
 
-                            <circle cx="320" cy="80" class="stop-dot" />
-                            <text x="300" y="65" class="stop-text">Seri Gading</text>
+                            <circle cx="320" cy="80" class="stop-dot" onclick="app.handleStopClick('Kolej Seri Gading')" style="cursor:pointer; pointer-events:all;" />
+                            <text x="300" y="65" class="stop-text" onclick="app.handleStopClick('Kolej Seri Gading')" style="cursor:pointer; pointer-events:all;">Seri Gading</text>
 
-                            <circle cx="320" cy="220" class="stop-dot" />
-                            <text x="300" y="245" class="stop-text">UiTM KS2</text>
+                            <circle cx="320" cy="220" class="stop-dot" onclick="app.handleStopClick('UiTM KS2')" style="cursor:pointer; pointer-events:all;" />
+                            <text x="300" y="245" class="stop-text" onclick="app.handleStopClick('UiTM KS2')" style="cursor:pointer; pointer-events:all;">UiTM KS2</text>
 
-                            <circle cx="80" cy="220" class="stop-dot" />
-                            <text x="60" y="245" class="stop-text">The SummerMall</text>
+                            <circle cx="80" cy="220" class="stop-dot" onclick="app.handleStopClick('The SummerMall')" style="cursor:pointer; pointer-events:all;" />
+                            <text x="60" y="245" class="stop-text" onclick="app.handleStopClick('The SummerMall')" style="cursor:pointer; pointer-events:all;">The SummerMall</text>
 
                             <!-- Bus -->
                             <g id="busMarker" class="bus-marker">
@@ -122,22 +122,22 @@
                             </tr>
                         </thead>
                         <tbody id="timetableBody">
-                            <tr>
+                            <tr onclick="app.toggleReminder('Kolej Seri Mulu')" style="cursor:pointer;">
                                 <td style="padding:10px; border-bottom:1px solid var(--map-stroke);">Kolej Seri Mulu
                                 </td>
                                 <td style="padding:10px; border-bottom:1px solid var(--map-stroke);">07:30 AM</td>
                             </tr>
-                            <tr>
+                            <tr onclick="app.toggleReminder('Kolej Gading')" style="cursor:pointer;">
                                 <td style="padding:10px; border-bottom:1px solid var(--map-stroke);">Kolej Gading
                                 </td>
                                 <td style="padding:10px; border-bottom:1px solid var(--map-stroke);">07:45 AM</td>
                             </tr>
-                            <tr>
+                            <tr onclick="app.toggleReminder('UiTM KS2')" style="cursor:pointer;">
                                 <td style="padding:10px; border-bottom:1px solid var(--map-stroke);">UiTM KS2
                                 </td>
                                 <td style="padding:10px; border-bottom:1px solid var(--map-stroke);">08:00 AM</td>
                             </tr>
-                            <tr>
+                            <tr onclick="app.toggleReminder('The SummerMall')" style="cursor:pointer;">
                                 <td style="padding:10px;">The SummerMall</td>
                                 <td style="padding:10px;">08:15 AM</td>
                             </tr>
@@ -198,7 +198,7 @@
                     <div class="balance-display">RM <span id="walletBalance">0.00</span></div>
                     <div style="font-size:0.8rem; margin-bottom:1rem;">Student ID: 2025123456</div>
 
-                    <div class="qr-container">
+                    <div class="qr-container" onclick="app.refreshQR()" style="cursor:pointer;" title="Tap to refresh QR">
                         <!-- Simple CSS/SVG QR Code Mockup -->
                         <svg viewBox="0 0 100 100" width="120" height="120">
                             <rect width="100" height="100" fill="white" />
@@ -247,7 +247,7 @@
         <!-- === VIEW: PROFILE (SETTINGS/ADMIN) === -->
         <section id="view-profile" class="view-section">
             <div class="container">
-                <div class="card" style="display:flex; align-items:center; gap:15px;">
+                <div class="card" style="display:flex; align-items:center; gap:15px; cursor:pointer;" onclick="app.editProfile()" title="Click to edit name">
                     <div
                         style="width:60px; height:60px; background:#ddd; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1.5rem;">
                         👤</div>
@@ -360,12 +360,12 @@
                 <button class="btn btn-outline" onclick="app.processTopUp(10)">RM 10</button>
                 <button class="btn btn-outline" onclick="app.processTopUp(20)">RM 20</button>
                 <button class="btn btn-outline" onclick="app.processTopUp(50)">RM 50</button>
-                <button class="btn btn-outline" style="border-style:dashed;">Custom</button>
+                <button class="btn btn-outline" style="border-style:dashed;" onclick="app.processCustomTopUp()">Custom</button>
             </div>
 
             <div style="margin-bottom:20px;">
                 <label style="display:block; margin-bottom:5px; font-size:0.8rem;">Source</label>
-                <select class="btn"
+                <select id="topUpSource" class="btn"
                     style="border:1px solid #ccc; padding:10px; background:var(--surface); color:var(--text-dark);">
                     <option>MAE / Maybank2u</option>
                     <option>Touch 'n Go eWallet</option>
