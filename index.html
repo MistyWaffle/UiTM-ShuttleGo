@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
     <title>UiTM ShuttleGo - Mobile App Prototype</title>
     <!-- 
         UiTM ShuttleGo V2.1
@@ -119,27 +119,29 @@
                             <tr>
                                 <th style="padding:10px; border-bottom:1px solid var(--map-stroke);">Stop</th>
                                 <th style="padding:10px; border-bottom:1px solid var(--map-stroke);">Est. Arrival</th>
+                                <th style="padding:10px; border-bottom:1px solid var(--map-stroke); width: 40px;"></th>
                             </tr>
                         </thead>
                         <tbody id="timetableBody">
-                            <tr onclick="app.toggleReminder('Kolej Seri Mulu')" style="cursor:pointer;">
-                                <td style="padding:10px; border-bottom:1px solid var(--map-stroke);">Kolej Seri Mulu
-                                </td>
-                                <td style="padding:10px; border-bottom:1px solid var(--map-stroke);">07:30 AM</td>
+                            <tr onclick="app.toggleReminder(this, 'Kolej Seri Mulu')" style="cursor:pointer; border-bottom: 1px solid var(--map-stroke);">
+                                <td style="padding:10px;">Kolej Seri Mulu</td>
+                                <td style="padding:10px;">07:30 AM</td>
+                                <td style="padding:10px; text-align:center;"><span class="reminder-btn">🔔</span></td>
                             </tr>
-                            <tr onclick="app.toggleReminder('Kolej Gading')" style="cursor:pointer;">
-                                <td style="padding:10px; border-bottom:1px solid var(--map-stroke);">Kolej Gading
-                                </td>
-                                <td style="padding:10px; border-bottom:1px solid var(--map-stroke);">07:45 AM</td>
+                            <tr onclick="app.toggleReminder(this, 'Kolej Gading')" style="cursor:pointer; border-bottom: 1px solid var(--map-stroke);">
+                                <td style="padding:10px;">Kolej Gading</td>
+                                <td style="padding:10px;">07:45 AM</td>
+                                <td style="padding:10px; text-align:center;"><span class="reminder-btn">🔔</span></td>
                             </tr>
-                            <tr onclick="app.toggleReminder('UiTM KS2')" style="cursor:pointer;">
-                                <td style="padding:10px; border-bottom:1px solid var(--map-stroke);">UiTM KS2
-                                </td>
-                                <td style="padding:10px; border-bottom:1px solid var(--map-stroke);">08:00 AM</td>
+                            <tr onclick="app.toggleReminder(this, 'UiTM KS2')" style="cursor:pointer; border-bottom: 1px solid var(--map-stroke);">
+                                <td style="padding:10px;">UiTM KS2</td>
+                                <td style="padding:10px;">08:00 AM</td>
+                                <td style="padding:10px; text-align:center;"><span class="reminder-btn">🔔</span></td>
                             </tr>
-                            <tr onclick="app.toggleReminder('The SummerMall')" style="cursor:pointer;">
+                            <tr onclick="app.toggleReminder(this, 'The SummerMall')" style="cursor:pointer;">
                                 <td style="padding:10px;">The SummerMall</td>
                                 <td style="padding:10px;">08:15 AM</td>
+                                <td style="padding:10px; text-align:center;"><span class="reminder-btn">🔔</span></td>
                             </tr>
                         </tbody>
                     </table>
@@ -167,6 +169,14 @@
                                 <div style="font-size: 0.8rem; opacity: 0.9;">Online • Route A</div>
                             </div>
                         </div>
+                    </div>
+
+                    <!-- Quick Replies -->
+                    <div class="quick-chips">
+                        <div class="chip" onclick="app.fillChat('Where is the bus?')">📍 Where is the bus?</div>
+                        <div class="chip" onclick="app.fillChat('Traffic status?')">🚦 Traffic status?</div>
+                        <div class="chip" onclick="app.fillChat('Next bus to KS2?')">⏰ Next bus to KS2?</div>
+                        <div class="chip" onclick="app.fillChat('My balance?')">💰 My balance?</div>
                     </div>
 
                     <div id="chatMessages"
@@ -232,7 +242,14 @@
                 </div>
 
                 <div class="card">
-                    <div class="card-title">Transaction History</div>
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                        <div class="card-title">History</div>
+                        <div class="filter-tabs">
+                            <div class="filter-tab active" onclick="app.filterTransactions('all', this)">All</div>
+                            <div class="filter-tab" onclick="app.filterTransactions('in', this)">In</div>
+                            <div class="filter-tab" onclick="app.filterTransactions('out', this)">Out</div>
+                        </div>
+                    </div>
                     <ul style="list-style:none; font-size:0.85rem; color:var(--text-sub);" id="transactionList">
                         <li
                             style="padding:8px 0; border-bottom:1px solid #eee; display:flex; justify-content:space-between;">
@@ -247,13 +264,13 @@
         <!-- === VIEW: PROFILE (SETTINGS/ADMIN) === -->
         <section id="view-profile" class="view-section">
             <div class="container">
-                <div class="card" style="display:flex; align-items:center; gap:15px; cursor:pointer;" onclick="app.editProfile()" title="Click to edit name">
-                    <div
+                <div class="card" style="display:flex; align-items:center; gap:15px;">
+                    <div id="profileAvatar" class="avatar-clickable" onclick="app.changeAvatar()"
                         style="width:60px; height:60px; background:#ddd; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1.5rem;">
                         👤</div>
                     <div>
-                        <div class="card-title" style="margin:0;">Student Name</div>
-                        <div style="color:var(--text-sub); font-size:0.9rem;">Faculty of Business Management</div>
+                        <div class="card-title" style="margin:0; cursor:pointer; text-decoration:underline; text-decoration-style:dotted;" onclick="app.editProfile('name')" title="Edit Name">Student Name</div>
+                        <div id="profileFaculty" style="color:var(--text-sub); font-size:0.9rem; cursor:pointer;" onclick="app.editProfile('faculty')">Faculty of Business Management ✎</div>
                     </div>
                 </div>
 
@@ -261,17 +278,6 @@
                     <div class="card-header">
                         <div class="card-title">App Settings</div>
                     </div>
-
-                    <div style="margin-bottom:15px; display:flex; justify-content:space-between; align-items:center;">
-                        <span>Dark Mode</span>
-                        <label class="switch" style="display:flex; align-items:center; gap:10px; cursor:pointer;">
-                            <input type="checkbox" id="themeToggle" onchange="app.toggleTheme(this.checked)">
-                            <span id="themeLabel"
-                                style="font-weight:bold; color:var(--uitm-purple); font-size:0.9rem;">OFF</span>
-                        </label>
-                    </div>
-
-                    <hr style="border:0; border-top:1px solid var(--map-stroke); margin: 15px 0;">
 
                     <div style="margin-bottom:15px; display:flex; justify-content:space-between; align-items:center;">
                         <span>Driver / Admin Mode</span>
@@ -309,6 +315,9 @@
         </section>
 
     </main>
+
+    <!-- TOAST CONTAINER -->
+    <div id="toast-container" class="toast-container"></div>
 
     <!-- NAVIGATION ISLAND -->
     <nav class="nav-island-container">

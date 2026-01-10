@@ -5,7 +5,8 @@ const CONFIG = {
         { id: 'gading', name: 'Kolej Seri Gading', x: 320, y: 80, p: 240 },
         { id: 'UiTM', name: 'UiTM KS2', x: 320, y: 220, p: 380 },
         { id: 'Mall', name: 'The SummerMall', x: 80, y: 220, p: 620 }
-    ]
+    ],
+    avatars: ['👤', '👩‍🎓', '👨‍🎓', '😸', '👽', '🦊']
 };
 
 const app = {
@@ -15,15 +16,38 @@ const app = {
     speed: 3,
     isTraffic: false,
     announcements: [],
-    isDark: false,
+    transactions: [
+        { id: 1, desc: 'Initial Bonus', amount: 5.00, type: 'in', date: new Date() }
+    ],
+    avatarIndex: 0,
 
     init: function () {
         this.loadData();
         this.renderBalance();
         this.renderAnnouncements();
+        this.renderTransactions('all');
         this.startSimulation();
-        this.loadTheme();
         this.handleLoadingScreen();
+    },
+
+    // --- UTILS: TOAST ---
+    showToast: function(msg, type = 'info') {
+        const container = document.getElementById('toast-container');
+        const toast = document.createElement('div');
+        toast.className = `toast ${type}`;
+        
+        let icon = 'ℹ️';
+        if (type === 'success') icon = '✅';
+        if (type === 'error') icon = '⚠️';
+
+        toast.innerHTML = `<span style="font-size:1.2rem;">${icon}</span> <span>${msg}</span>`;
+        container.appendChild(toast);
+
+        // Remove after 3s
+        setTimeout(() => {
+            toast.style.animation = 'fadeOutUp 0.3s ease-in forwards';
+            setTimeout(() => toast.remove(), 300);
+        }, 3000);
     },
 
     // --- LOADING SCREEN ---
@@ -37,30 +61,6 @@ const app = {
                 }, 500); // Wait for transition to finish
             }
         }, 2000); // Show logo for 2 seconds
-    },
-
-    // --- THEMING ---
-    toggleTheme: function (isDark) {
-        this.isDark = isDark;
-        if (isDark) {
-            document.documentElement.setAttribute('data-theme', 'dark');
-            document.getElementById('themeLabel').innerText = "ON";
-        } else {
-            document.documentElement.removeAttribute('data-theme');
-            document.getElementById('themeLabel').innerText = "OFF";
-        }
-        localStorage.setItem('shuttle_theme', isDark ? 'dark' : 'light');
-    },
-
-    loadTheme: function () {
-        const savedTheme = localStorage.getItem('shuttle_theme');
-        const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-
-        // Default to saved preference, or system preference if not saved
-        if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
-            document.getElementById('themeToggle').checked = true;
-            this.toggleTheme(true);
-        }
     },
 
     // --- NAVIGATION ---
@@ -102,11 +102,11 @@ const app = {
 
         setTimeout(() => {
             this.balance += amount;
-            this.addTransaction(`Top Up via ${sourceName}`, `+ RM ${amount.toFixed(2)}`);
+            this.addTransaction(`Top Up via ${sourceName}`, amount, 'in');
             this.renderBalance();
             this.closeModal();
             btn.innerText = originalText;
-            alert(`Top up of RM ${amount} successful via ${sourceName}!`);
+            this.showToast(`Top up of RM ${amount} successful!`, 'success');
         }, 800);
     },
 
@@ -117,13 +117,14 @@ const app = {
             if (!isNaN(amount) && amount > 0) {
                 this.processTopUp(amount);
             } else {
-                alert("Invalid amount entered.");
+                this.showToast("Invalid amount entered.", 'error');
             }
         }
     },
 
     handleStopClick: function(stopName) {
-        alert(`🚏 Stop Info:\n${stopName}\n\nStatus: Active\nFacilities: Covered waiting area.`);
+        // Show info in toast instead of alert
+        this.showToast(`Stop: ${stopName} is Active`, 'info');
     },
 
     refreshQR: function() {
@@ -132,26 +133,49 @@ const app = {
             qr.style.opacity = '0.5';
             setTimeout(() => {
                 qr.style.opacity = '1';
-                alert("QR Code Refreshed!");
+                this.showToast("QR Code Refreshed!", 'success');
             }, 500);
         }
     },
 
-    editProfile: function() {
-        const name = prompt("Edit Display Name:", "Student Name");
-        if(name) {
-            document.querySelector('#view-profile .card-title').innerText = name;
-            alert("Profile Updated!");
+    // --- PROFILE ---
+    editProfile: function(field = 'name') {
+        const currentText = field === 'name' ? 
+            document.querySelector('#view-profile .card-title').innerText : 
+            document.getElementById('profileFaculty').innerText.replace(' ✎', '');
+
+        const input = prompt(`Edit ${field === 'name' ? 'Name' : 'Faculty'}:`, currentText);
+        
+        if(input) {
+            if(field === 'name') {
+                document.querySelector('#view-profile .card-title').innerText = input;
+            } else {
+                document.getElementById('profileFaculty').innerText = input + ' ✎';
+            }
+            this.showToast("Profile Updated!", 'success');
         }
     },
 
-    toggleReminder: function(stopName) {
-        alert(`⏰ Reminder set for ${stopName}.\nWe will notify you 5 minutes before arrival.`);
+    changeAvatar: function() {
+        this.avatarIndex = (this.avatarIndex + 1) % CONFIG.avatars.length;
+        document.getElementById('profileAvatar').innerText = CONFIG.avatars[this.avatarIndex];
+    },
+
+    // --- SCHEDULE ---
+    toggleReminder: function(row, stopName) {
+        row.classList.toggle('reminder-active');
+        const isActive = row.classList.contains('reminder-active');
+        
+        if(isActive) {
+            this.showToast(`Reminder set for ${stopName}`, 'success');
+        } else {
+            this.showToast(`Reminder removed for ${stopName}`, 'info');
+        }
     },
 
     simulateScan: function () {
         if (this.balance < 2.00) {
-            alert("Insufficient Balance! Please top up.");
+            this.showToast("Insufficient Balance! Please top up.", 'error');
             return;
         }
 
@@ -161,18 +185,52 @@ const app = {
         setTimeout(() => {
             this.balance -= 2.00;
             this.renderBalance();
-            this.addTransaction("Shuttle Ride (Line A)", "- RM 2.00");
+            this.addTransaction("Shuttle Ride (Line A)", 2.00, 'out');
             feedback.innerText = "✅ Payment Successful!";
+            this.showToast("Payment Successful - RM 2.00", 'success');
             setTimeout(() => feedback.innerText = "", 3000);
         }, 1000);
     },
 
-    addTransaction: function (desc, amountStr) {
+    addTransaction: function (desc, amount, type) {
+        this.transactions.unshift({
+            id: Date.now(),
+            desc: desc,
+            amount: amount,
+            type: type, // 'in' or 'out'
+            date: new Date()
+        });
+        this.renderTransactions('all');
+    },
+
+    filterTransactions: function(filterType, tabElement) {
+        // Update tabs
+        if(tabElement) {
+            document.querySelectorAll('.filter-tab').forEach(el => el.classList.remove('active'));
+            tabElement.classList.add('active');
+        }
+        this.renderTransactions(filterType);
+    },
+
+    renderTransactions: function(filterType) {
         const list = document.getElementById('transactionList');
-        const li = document.createElement('li');
-        li.style.cssText = "padding:8px 0; border-bottom:1px solid #eee; display:flex; justify-content:space-between; animation:fadeIn 0.5s;";
-        li.innerHTML = `<span>${desc}</span> <span style="${amountStr.includes('+') ? 'color:green' : 'color:red'}">${amountStr}</span>`;
-        list.prepend(li);
+        list.innerHTML = '';
+
+        const filtered = this.transactions.filter(t => filterType === 'all' || t.type === filterType);
+
+        if(filtered.length === 0) {
+            list.innerHTML = `<li style="padding:15px; text-align:center; color:#ccc;">No transactions found.</li>`;
+            return;
+        }
+
+        filtered.forEach(t => {
+            const li = document.createElement('li');
+            li.style.cssText = "padding:8px 0; border-bottom:1px solid #eee; display:flex; justify-content:space-between; animation:fadeIn 0.5s;";
+            const color = t.type === 'in' ? 'green' : 'red';
+            const sign = t.type === 'in' ? '+' : '-';
+            li.innerHTML = `<span>${t.desc}</span> <span style="color:${color}; font-weight:bold;">${sign} RM ${t.amount.toFixed(2)}</span>`;
+            list.appendChild(li);
+        });
     },
 
     // --- SIMULATION ENGINE ---
@@ -254,6 +312,7 @@ const app = {
             consoleDiv.classList.remove('hidden');
             label.innerText = "ON";
             label.style.color = "red";
+            this.showToast("Admin Mode Activated", 'error');
         } else {
             consoleDiv.classList.add('hidden');
             label.innerText = "OFF";
@@ -267,9 +326,11 @@ const app = {
         if (isTraffic) {
             indicator.innerText = "Traffic Jam (Slow)";
             indicator.style.color = "red";
+            this.showToast("Traffic status set to: JAM", 'error');
         } else {
             indicator.innerText = "Normal Traffic";
             indicator.style.color = "#333";
+            this.showToast("Traffic status set to: NORMAL", 'success');
         }
     },
 
@@ -280,7 +341,7 @@ const app = {
         this.announcements.unshift({ text: input.value, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) });
         this.renderAnnouncements();
         input.value = "";
-        alert("Announcement Posted");
+        this.showToast("Announcement Posted", 'success');
     },
 
     renderAnnouncements: function () {
@@ -301,6 +362,12 @@ const app = {
     },
 
     // --- CHAT LOGIC ---
+    fillChat: function(msg) {
+        const input = document.getElementById('chatInput');
+        input.value = msg;
+        this.sendChat();
+    },
+
     sendChat: function() {
         const input = document.getElementById('chatInput');
         const text = input.value.trim();
@@ -358,7 +425,7 @@ const app = {
             });
             return `I'm currently near ${nearest.name}. Driving safely! 🚌`;
         }
-        if (msg.includes('schedule') || msg.includes('time') || msg.includes('when')) {
+        if (msg.includes('schedule') || msg.includes('time') || msg.includes('when') || msg.includes('next')) {
             return "I loop every 20-30 minutes. Check the 'Schedule' tab for exact times!";
         }
         if (msg.includes('traffic') || msg.includes('jam')) {
