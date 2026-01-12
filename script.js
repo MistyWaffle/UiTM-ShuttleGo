@@ -447,6 +447,109 @@ const app = {
         return defaults[Math.floor(Math.random() * defaults.length)];
     },
 
+    previousView: 'tracker',
+
+    generateStudentReport: function() {
+        if (this.transactions.length === 0) {
+            this.showToast("No transactions to report.", 'error');
+            return;
+        }
+
+        this.previousView = 'pay'; // Logic assumes we come from pay view
+        document.getElementById('reportTitle').innerText = "Student Financial Report";
+        
+        let html = `
+            <table style="width:100%; border-collapse:collapse; font-size:0.9rem;">
+                <thead style="background:var(--bg-neutral); text-align:left;">
+                    <tr>
+                        <th style="padding:10px; border-bottom:1px solid #ccc;">Date</th>
+                        <th style="padding:10px; border-bottom:1px solid #ccc;">Description</th>
+                        <th style="padding:10px; border-bottom:1px solid #ccc;">Type</th>
+                        <th style="padding:10px; border-bottom:1px solid #ccc; text-align:right;">Amount (RM)</th>
+                    </tr>
+                </thead>
+                <tbody>
+        `;
+
+        this.transactions.forEach(t => {
+            const date = new Date(t.date).toLocaleString();
+            const color = t.type === 'in' ? 'green' : 'red';
+            html += `
+                <tr style="border-bottom:1px solid #eee;">
+                    <td style="padding:10px;">${date}</td>
+                    <td style="padding:10px;">${t.desc}</td>
+                    <td style="padding:10px;"><span class="badge ${t.type === 'in' ? 'badge-student' : 'badge-admin'}">${t.type.toUpperCase()}</span></td>
+                    <td style="padding:10px; text-align:right; font-weight:bold; color:${color};">${t.amount.toFixed(2)}</td>
+                </tr>
+            `;
+        });
+
+        html += `</tbody></table>`;
+        
+        document.getElementById('reportContent').innerHTML = html;
+        this.navTo('report');
+    },
+
+    generateRevenueReport: function() {
+        this.previousView = 'profile'; // Logic assumes we come from profile/admin view
+        document.getElementById('reportTitle').innerText = "Admin Revenue Report (7 Days)";
+
+        let html = `
+            <table style="width:100%; border-collapse:collapse; font-size:0.9rem;">
+                <thead style="background:var(--bg-neutral); text-align:left;">
+                    <tr>
+                        <th style="padding:10px; border-bottom:1px solid #ccc;">Date</th>
+                        <th style="padding:10px; border-bottom:1px solid #ccc; text-align:center;">Total Riders</th>
+                        <th style="padding:10px; border-bottom:1px solid #ccc; text-align:right;">Total Revenue</th>
+                    </tr>
+                </thead>
+                <tbody>
+        `;
+        
+        const today = new Date();
+        let totalRev = 0;
+        let totalRiders = 0;
+
+        for (let i = 0; i < 7; i++) {
+            const d = new Date(today);
+            d.setDate(today.getDate() - i);
+            const dateStr = d.toLocaleDateString();
+            
+            // Random mock values
+            const riders = Math.floor(Math.random() * (500 - 100) + 100);
+            const revenue = riders * 2.00;
+            
+            totalRiders += riders;
+            totalRev += revenue;
+
+            html += `
+                <tr style="border-bottom:1px solid #eee;">
+                    <td style="padding:10px;">${dateStr}</td>
+                    <td style="padding:10px; text-align:center;">${riders}</td>
+                    <td style="padding:10px; text-align:right;">RM ${revenue.toFixed(2)}</td>
+                </tr>
+            `;
+        }
+
+        // Footer Total
+        html += `
+            <tr style="background:var(--bg-neutral); font-weight:bold;">
+                <td style="padding:10px;">TOTAL</td>
+                <td style="padding:10px; text-align:center;">${totalRiders}</td>
+                <td style="padding:10px; text-align:right;">RM ${totalRev.toFixed(2)}</td>
+            </tr>
+        `;
+
+        html += `</tbody></table>`;
+
+        document.getElementById('reportContent').innerHTML = html;
+        this.navTo('report');
+    },
+
+    closeReport: function() {
+        this.navTo(this.previousView);
+    },
+
     loadData: function () {
         const bal = localStorage.getItem('shuttle_balance');
         if (bal) this.balance = parseFloat(bal);

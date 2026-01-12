@@ -403,6 +403,19 @@ main {
     transform: scale(0.98);
 }
 
+.btn-sm {
+    font-size: 0.75rem;
+    padding: 4px 8px;
+    border: 1px solid #ccc;
+    background: white;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.btn-sm:hover {
+    background: #f0f0f0;
+}
+
 .btn-primary {
     background: var(--uitm-gold);
     color: #4a3b00;

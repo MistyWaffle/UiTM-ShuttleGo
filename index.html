@@ -244,8 +244,10 @@
                 <div class="card">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
                         <div class="card-title">History</div>
-                        <div class="filter-tabs">
-                            <div class="filter-tab active" onclick="app.filterTransactions('all', this)">All</div>
+                        <button class="btn-sm" onclick="app.generateStudentReport()" style="font-size:0.75rem; padding:4px 8px; border:1px solid #ccc; background:white; border-radius:4px; cursor:pointer;">📄 Report</button>
+                    </div>
+                    <div class="filter-tabs" style="margin-bottom:10px;">
+                        <div class="filter-tab active" onclick="app.filterTransactions('all', this)">All</div>
                             <div class="filter-tab" onclick="app.filterTransactions('in', this)">In</div>
                             <div class="filter-tab" onclick="app.filterTransactions('out', this)">Out</div>
                         </div>
@@ -297,6 +299,7 @@
                         <button class="btn btn-danger" onclick="app.setTraffic(true)">⚠️ Report Traffic Jam (Slow
                             Bus)</button>
                         <button class="btn btn-outline" onclick="app.setTraffic(false)">⚡ Clear Traffic Status</button>
+                        <button class="btn btn-primary" onclick="app.generateRevenueReport()">📊 Generate Revenue Report</button>
                         <hr style="border:0; border-top:1px solid #eee;">
                         <input type="text" id="adminMsg" placeholder="Announcement text..."
                             style="padding:10px; border:1px solid #ddd; border-radius:8px; width:100%; background:var(--surface); color:var(--text-dark);">
@@ -309,6 +312,24 @@
                     Made by <strong>Sylvester Ady Alichan</strong> for BTM533 Group Project
                     <div style="margin-top: 8px; font-size: 0.8rem; opacity: 0.8;">
                         This application is a prototype developed for academic purposes to demonstrate a shuttle tracking and payment system.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- === VIEW: REPORT === -->
+        <section id="view-report" class="view-section">
+            <div class="container">
+                <div class="card">
+                    <div class="card-header" style="justify-content: flex-start; gap: 15px;">
+                        <button class="btn-sm" onclick="app.closeReport()" style="width: auto; font-size: 1rem; padding: 5px 15px;">⬅ Back</button>
+                        <div class="card-title" id="reportTitle">Report</div>
+                    </div>
+                    <div id="reportContent" style="overflow-x: auto;">
+                        <!-- Report Table Goes Here -->
+                    </div>
+                    <div style="margin-top: 15px; text-align: center;">
+                        <button class="btn btn-outline" onclick="window.print()">🖨️ Print / Save PDF</button>
                     </div>
                 </div>
             </div>
