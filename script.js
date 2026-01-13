@@ -12,6 +12,7 @@ const CONFIG = {
 const app = {
     // State
     balance: 5.00,
+    studentId: '2025123456', // Default fallback
     busPos: 0,
     speed: 3,
     isTraffic: false,
@@ -27,7 +28,10 @@ const app = {
         this.renderAnnouncements();
         this.renderTransactions('all');
         this.startSimulation();
-        this.handleLoadingScreen();
+        
+        // Ensure UI matches initial state (Login View)
+        // We manually hide header/nav in HTML, but let's ensure logical consistency if we reload
+        // Since HTML has view-login active, we are good.
     },
 
     // --- UTILS: TOAST ---
@@ -50,28 +54,67 @@ const app = {
         }, 3000);
     },
 
-    // --- LOADING SCREEN ---
-    handleLoadingScreen: function() {
-        setTimeout(() => {
-            const loader = document.getElementById('loading-screen');
-            if (loader) {
-                loader.classList.add('fade-out');
-                setTimeout(() => {
-                    loader.remove(); // Remove from DOM to cleanup
-                }, 500); // Wait for transition to finish
-            }
-        }, 2000); // Show logo for 2 seconds
-    },
-
     // --- NAVIGATION ---
     navTo: function (viewId) {
         // 1. Hide all views
         document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
         // 2. Show target
         document.getElementById(`view-${viewId}`).classList.add('active');
-        // 3. Update Bottom Nav Icons
-        document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-        document.getElementById(`nav-${viewId}`).classList.add('active');
+        
+        // 3. Toggle Header and Nav Island based on view
+        const header = document.getElementById('appHeader');
+        const nav = document.getElementById('appNav');
+        
+        if (viewId === 'login') {
+            if(header) header.style.display = 'none';
+            if(nav) nav.style.display = 'none';
+        } else {
+            if(header) header.style.display = 'flex';
+            if(nav) nav.style.display = 'flex';
+            
+            // 4. Update Bottom Nav Icons only if not login
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            const navItem = document.getElementById(`nav-${viewId}`);
+            if (navItem) navItem.classList.add('active');
+        }
+    },
+
+    // --- LOGIN ---
+    handleLogin: function() {
+        const idInput = document.getElementById('loginStudentId');
+        const passInput = document.getElementById('loginPassword');
+        
+        const id = idInput.value.trim();
+        const pass = passInput.value.trim();
+
+        if (!id || !pass) {
+            this.showToast("Please enter Student ID and Password", "error");
+            return;
+        }
+
+        this.studentId = id;
+        
+        // Update Profile Display
+        const profileIdEl = document.getElementById('profileStudentId');
+        if(profileIdEl) profileIdEl.innerText = `ID: ${this.studentId}`;
+
+        // Update Wallet Display
+        const walletIdEl = document.getElementById('walletStudentId');
+        if(walletIdEl) walletIdEl.innerText = `Student ID: ${this.studentId}`;
+
+        // Save to local storage for persistence if needed, but for now we just keep state
+        this.navTo('tracker');
+        this.showToast(`Welcome, Student ${this.studentId}!`, 'success');
+    },
+
+    handleLogout: function() {
+        this.navTo('login');
+        
+        // Reset Inputs
+        document.getElementById('loginStudentId').value = '';
+        document.getElementById('loginPassword').value = '';
+        
+        this.showToast("Logged out successfully.", 'info');
     },
 
     // --- WALLET & PAYMENT ---

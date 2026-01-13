@@ -18,14 +18,8 @@
 
 <body>
 
-    <!-- LOADING SCREEN -->
-    <div id="loading-screen">
-        <img src="logo.svg" alt="Loading..." class="loading-logo">
-        <div style="margin-top: 20px; color: var(--uitm-purple); font-weight: bold;">UiTM ShuttleGo</div>
-    </div>
-
     <!-- HEADER -->
-    <header>
+    <header id="appHeader" style="display:none;">
         <div class="logo">
             <img src="logo.svg" alt="UiTM ShuttleGo" style="height: 35px; width: auto; object-fit: contain;">
         </div>
@@ -37,8 +31,38 @@
     <!-- MAIN CONTENT AREA -->
     <main id="mainContent">
 
+        <!-- === VIEW: LOGIN === -->
+        <section id="view-login" class="view-section active">
+            <div class="container login-container">
+                <div class="card login-card">
+                    <img src="logo.svg" alt="UiTM ShuttleGo" class="login-logo">
+                    <h2 class="card-title" style="font-size: 1.5rem; margin-bottom: 5px;">Student Login</h2>
+                    <p style="color: var(--text-sub); margin-bottom: 25px;">Welcome back! Please login to continue.</p>
+                    
+                    <div style="text-align: left; margin-bottom: 15px;">
+                        <label style="font-size: 0.85rem; font-weight: bold; margin-bottom: 5px; display: block;">Student ID</label>
+                        <input type="number" id="loginStudentId" placeholder="e.g. 2024123456" 
+                            class="login-input">
+                    </div>
+
+                    <div style="text-align: left; margin-bottom: 25px;">
+                        <label style="font-size: 0.85rem; font-weight: bold; margin-bottom: 5px; display: block;">Password</label>
+                        <input type="password" id="loginPassword" placeholder="••••••••" 
+                            class="login-input">
+                    </div>
+
+                    <button class="btn btn-primary" onclick="app.handleLogin()">Login</button>
+
+                    <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #eee; font-size: 0.8rem; color: var(--text-sub); line-height: 1.4;">
+                        <strong>PROTOTYPE NOTICE:</strong><br>
+                        This is a demonstration build. You can enter any number and password to access the application.
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <!-- === VIEW: TRACKER === -->
-        <section id="view-tracker" class="view-section active">
+        <section id="view-tracker" class="view-section">
             <div class="container">
 
                 <!-- Map Card -->
@@ -206,7 +230,7 @@
                 <div class="card wallet-card">
                     <div style="font-size:0.9rem; opacity:0.9;">My Balance</div>
                     <div class="balance-display">RM <span id="walletBalance">0.00</span></div>
-                    <div style="font-size:0.8rem; margin-bottom:1rem;">Student ID: 2025123456</div>
+                    <div style="font-size:0.8rem; margin-bottom:1rem;" id="walletStudentId">Student ID: 2025123456</div>
 
                     <div class="qr-container" onclick="app.refreshQR()" style="cursor:pointer;" title="Tap to refresh QR">
                         <!-- Simple CSS/SVG QR Code Mockup -->
@@ -272,6 +296,7 @@
                         👤</div>
                     <div>
                         <div class="card-title" style="margin:0; cursor:pointer; text-decoration:underline; text-decoration-style:dotted;" onclick="app.editProfile('name')" title="Edit Name">Student Name</div>
+                        <div id="profileStudentId" style="font-size:0.85rem; color:var(--text-sub); margin-bottom: 2px;">ID: -</div>
                         <div id="profileFaculty" style="color:var(--text-sub); font-size:0.9rem; cursor:pointer;" onclick="app.editProfile('faculty')">Faculty of Business Management ✎</div>
                     </div>
                 </div>
@@ -314,6 +339,10 @@
                         This application is a prototype developed for academic purposes to demonstrate a shuttle tracking and payment system.
                     </div>
                 </div>
+
+                <button class="btn btn-outline" style="border-color: #ff3d00; color: #ff3d00; margin-bottom: 20px;" onclick="app.handleLogout()">
+                    Logout
+                </button>
             </div>
         </section>
 
@@ -341,7 +370,7 @@
     <div id="toast-container" class="toast-container"></div>
 
     <!-- NAVIGATION ISLAND -->
-    <nav class="nav-island-container">
+    <nav id="appNav" class="nav-island-container" style="display:none;">
         <div class="nav-island">
             <div class="nav-item active" onclick="app.navTo('tracker')" id="nav-tracker">
                 <svg viewBox="0 0 24 24">

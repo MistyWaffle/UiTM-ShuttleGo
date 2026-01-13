@@ -43,40 +43,6 @@ body {
     font-size: 16px; /* Optimized for readability */
 }
 
-/* --- LOADING SCREEN --- */
-#loading-screen {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: var(--surface);
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    z-index: 9999;
-    transition: opacity 0.5s ease-out, visibility 0.5s ease-out;
-}
-
-#loading-screen.fade-out {
-    opacity: 0;
-    visibility: hidden;
-    pointer-events: none;
-}
-
-.loading-logo {
-    width: 80px;
-    height: 80px;
-    animation: pulse 2s infinite ease-in-out;
-}
-
-@keyframes pulse {
-    0% { transform: scale(1); opacity: 1; }
-    50% { transform: scale(1.1); opacity: 0.8; }
-    100% { transform: scale(1); opacity: 1; }
-}
-
 /* Scrollbar Styling */
 ::-webkit-scrollbar {
     width: 8px;
@@ -711,4 +677,57 @@ table thead {
 }
 .avatar-clickable:active {
     transform: scale(0.9);
+}
+
+/* --- LOGIN PAGE STYLES --- */
+.login-container {
+    min-height: 90vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding-bottom: 2rem;
+}
+
+.login-card {
+    width: 100%;
+    max-width: 400px;
+    padding: 2rem;
+    margin: 0 auto;
+}
+
+.login-logo {
+    height: 60px;
+    margin-bottom: 20px;
+    width: auto;
+}
+
+.login-input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 1rem;
+    background: var(--surface);
+    color: var(--text-dark);
+}
+
+@media (max-width: 480px) {
+    .login-container {
+        padding: 1rem;
+        align-items: center; /* Center vertically on small screens too */
+    }
+    .login-card {
+        padding: 1.5rem;
+        box-shadow: none; /* Flatter look on mobile if preferred, or keep shadow */
+        background: transparent; /* Seamless feel on very small screens */
+    }
+    /* If we remove card bg, we need to ensure text is readable. 
+       Actually, keeping the card look is better for consistency. 
+       Let's just adjust padding/width. */
+    .login-card {
+        background: var(--surface);
+        box-shadow: var(--shadow-sm);
+        width: 100%;
+    }
 }
